@@ -1,3 +1,7 @@
 .idea
 lfw
 CASIA-WebFace
+*.pyc
+train_223_lmdb
+train_227_lmdb
+data
