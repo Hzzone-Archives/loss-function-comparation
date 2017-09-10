@@ -10,6 +10,33 @@ import preprocess
 import distance
 import about_lmdb
 
+# source dataset lmdb
+def predict_siamese_with_softmaxloss(source, caffemodel, deploy_file, IMAGE_SIZE=227, gpu_mode=True, LAST_LAYER_NAME="ip1"):
+    if gpu_mode:
+        caffe.set_mode_gpu()
+    else:
+        caffe.set_mode_cpu()
+    net = caffe.Net(deploy_file, caffemodel, caffe.TEST)
+    dimension = 1
+    with open("/Users/HZzone/caffe/data/mnist/t10k-images-idx3-ubyte", 'rb') as f:
+        f.read(16) # skip the header
+        raw_data = np.fromstring(f.read(10000 * 28*28), dtype=np.uint8)
+    with open("/Users/HZzone/caffe/data/mnist/t10k-labels-idx1-ubyte", 'rb') as f:
+        f.read(8) # skip the header
+        labels = np.fromstring(f.read(10000), dtype=np.uint8)
+    caffe_in = raw_data.reshape(10000, 1, 28, 28) * 0.00390625 # manually scale data instead of using `caffe.io.Transformer`
+    data = np.zeros((1, dimension*2, IMAGE_SIZE, IMAGE_SIZE))
+    # only for test LeNet
+    data[0, :dimension, :, :] = caffe_in[0]
+    data[0, dimension:, :, :] = caffe_in[1]
+    net.blobs['pair_data'].data[...] = data
+    output = net.forward()
+    result = output[LAST_LAYER_NAME][0]
+    print result
+    print labels[0]
+    print labels[1]
+
+
 def ordinary_predict_two_sample(source1, source2, caffemodel, deploy_file, dimension=150, IMAGE_SIZE=227, gpu_mode=True, LAST_LAYER_NAME="ip1"):
     if gpu_mode:
         caffe.set_mode_gpu()
@@ -60,12 +87,14 @@ def siamese_predict_dataset(source, caffemodel, deploy_file, dimension=150, IMAG
 
 
 if __name__ == "__main__":
-    # same
-    ordinary_predict_two_sample("/Users/HZzone/Desktop/temp/0007390273/29150000",
-                                "/Users/HZzone/Desktop/temp/0007390273/33108983",
-                                "/Users/HZzone/Downloads/lenet_iter_10000.caffemodel", "../ct-test/lenet.prototxt", gpu_mode=False)
-
-    # diff
-    ordinary_predict_two_sample("/Users/HZzone/Desktop/temp/0008064128/10480000",
-                                "/Users/HZzone/Desktop/temp/0007390273/33108983",
-                                "/Users/HZzone/Downloads/lenet_iter_10000.caffemodel", "../ct-test/lenet.prototxt", gpu_mode=False)
+    # # same
+    # ordinary_predict_two_sample("/Users/HZzone/Desktop/temp/0007390273/29150000",
+    #                             "/Users/HZzone/Desktop/temp/0007390273/33108983",
+    #                             "/Users/HZzone/Downloads/lenet_iter_10000.caffemodel", "../ct-test/lenet.prototxt", gpu_mode=False)
+    #
+    # # diff
+    # ordinary_predict_two_sample("/Users/HZzone/Desktop/temp/0008064128/10480000",
+    #                             "/Users/HZzone/Desktop/temp/0007390273/33108983",
+    #                             "/Users/HZzone/Downloads/lenet_iter_10000.caffemodel", "../ct-test/lenet.prototxt", gpu_mode=False)
+    predict_siamese_with_softmaxloss("../mnist_siamese_with_softmax_loss/mnist_siamese_test_leveldb", "../mnist_siamese_with_softmax_loss/mnist_siamese_train_softmaxloss_iter_10000.caffemodel",
+                                     "../mnist_siamese_with_softmax_loss/mnist_siamese_two_branch.prototxt", gpu_mode=False, IMAGE_SIZE=28, LAST_LAYER_NAME="classifier")
