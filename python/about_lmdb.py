@@ -71,7 +71,7 @@ def generate_siamese_lmdb(source, target, IMAGE_SIZE=227):
 
 # generate dataset path
 # combines the samples, return _same and _diff
-def generate_siamese_dataset(source, totals):
+def generate_siamese_dataset(source, totals=500000):
     all_samples = []
     _same = []
     _diff = []
@@ -92,4 +92,5 @@ def generate_siamese_dataset(source, totals):
     return _same[:totals/2], _diff[:totals/2]
 
 if __name__ == "__main__":
-    generate_ordinary_lmdb("../CASIA-WebFace", "../data/train_227_lmdb")
+    # generate_ordinary_lmdb("../CASIA-WebFace", "/home/bw/disk/data/test_227_lmdb", IMAGE_SIZE=227)
+    generate_siamese_lmdb("../CASIA-WebFace", "/home/bw/disk/data/siamese_train_227_lmdb", IMAGE_SIZE=227)
