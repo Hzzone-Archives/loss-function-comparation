@@ -89,6 +89,8 @@ def generate_siamese_dataset(source, totals=500000):
             _diff.append(one_comination)
     random.shuffle(_diff)
     random.shuffle(_same)
+    print _diff
+    print len(_diff)
     return _same[:totals/2], _diff[:totals/2]
 
 if __name__ == "__main__":
