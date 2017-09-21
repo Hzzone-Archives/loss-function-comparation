@@ -5,3 +5,4 @@ CASIA-WebFace
 train_223_lmdb
 train_227_lmdb
 data
+*.caffemodel
