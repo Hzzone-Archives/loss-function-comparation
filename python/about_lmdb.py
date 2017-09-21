@@ -2,7 +2,7 @@
 import lmdb
 import numpy as np
 import os
-caffe_root = '/Users/HZzone/caffe'  # this file is expected to be in {caffe_root}/examples/siamese
+caffe_root = '/home/hzzone/caffe'  # this file is expected to be in {caffe_root}/examples/siamese
 import sys
 sys.path.insert(0, os.path.join(caffe_root, 'python'))
 import caffe
@@ -94,5 +94,6 @@ def generate_siamese_dataset(source, totals=500000):
     return _same[:totals/2], _diff[:totals/2]
 
 if __name__ == "__main__":
-    # generate_ordinary_lmdb("../CASIA-WebFace", "/home/bw/disk/data/test_227_lmdb", IMAGE_SIZE=227)
-    generate_siamese_lmdb("../CASIA-WebFace", "/home/bw/disk/data/siamese_train_227_lmdb", IMAGE_SIZE=227)
+    generate_ordinary_lmdb("../CASIA-WebFace", "/home/hzzone/1tb/data/train_lmdb", IMAGE_SIZE=227)
+    generate_ordinary_lmdb("../lfw", "/home/hzzone/1tb/data/test_lmdb", IMAGE_SIZE=227)
+    # generate_siamese_lmdb("../CASIA-WebFace", "/home/hzzone/1tb/data/siamese_train_227_lmdb", IMAGE_SIZE=227)

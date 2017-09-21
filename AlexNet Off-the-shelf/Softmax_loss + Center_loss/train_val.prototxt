@@ -10,30 +10,10 @@ layer {
   transform_param {
     mirror: true
     crop_size: 227
-    mean_file: "data/ilsvrc12/imagenet_mean.binaryproto"
   }
   data_param {
-    source: "examples/imagenet/ilsvrc12_train_lmdb"
-    batch_size: 256
-    backend: LMDB
-  }
-}
-layer {
-  name: "data"
-  type: "Data"
-  top: "data"
-  top: "label"
-  include {
-    phase: TEST
-  }
-  transform_param {
-    mirror: false
-    crop_size: 227
-    mean_file: "data/ilsvrc12/imagenet_mean.binaryproto"
-  }
-  data_param {
-    source: "examples/imagenet/ilsvrc12_val_lmdb"
-    batch_size: 50
+    source: "/home/hzzone/1tb/data/train_lmdb"
+    batch_size: 128
     backend: LMDB
   }
 }
@@ -341,7 +321,7 @@ layer {
   }
 }
 layer {
-  name: "fc8"
+  name: "my-fc8"
   type: "InnerProduct"
   bottom: "fc7"
   top: "fc8"
@@ -354,7 +334,7 @@ layer {
     decay_mult: 0
   }
   inner_product_param {
-    num_output: 1000
+    num_output: 10572
     weight_filler {
       type: "gaussian"
       std: 0.01
@@ -366,19 +346,9 @@ layer {
   }
 }
 layer {
-  name: "accuracy"
-  type: "Accuracy"
-  bottom: "fc8"
-  bottom: "label"
-  top: "accuracy"
-  include {
-    phase: TEST
-  }
-}
-layer {
   name: "loss"
   type: "SoftmaxWithLoss"
-  bottom: "fc8"
+  bottom: "my-fc8"
   bottom: "label"
   top: "loss"
 }
