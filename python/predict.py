@@ -10,6 +10,11 @@ import preprocess
 import distance
 import about_lmdb
 
+# output
+def output_features(source):
+    samples = [os.path.join(source, s) for s in os.listdir(source)]
+    all_samples = [os.path.join(source, s) for s in os.listdir(source)]
+
 # source dataset lmdb
 def predict_siamese_with_softmaxloss(source, caffemodel, deploy_file, IMAGE_SIZE=227, gpu_mode=True, LAST_LAYER_NAME="ip1"):
     if gpu_mode:
