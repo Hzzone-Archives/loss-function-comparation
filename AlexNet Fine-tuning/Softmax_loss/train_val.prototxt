@@ -18,6 +18,20 @@ layer {
   }
 }
 layer {
+  name: "data"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  data_param {
+    source: "/home/hzzone/1tb/data/train_lmdb"
+    batch_size: 1
+    backend: LMDB
+  }
+}
+layer {
   name: "conv1"
   type: "Convolution"
   bottom: "data"
