@@ -1,15 +1,16 @@
 # A Discriminative Siamese Network with Softmax loss.
 #### Generate Dataset
-
+:simple_smile::simple_smile::simple_smile::simple_smile::simple_smile:
 Generate two-patchs dataset randomly and classification dataset, including CASIA-WebFace trained dataset and lfw test dataset. Detailly, all network are trained and tested on the same dataset, but for Siamese Network it is two-patchs, and for Classification Network one-patch.
+
 **Training on CASIA-WebFace, and test on lfw.**
 #### Trace
 
 1. Softmax_loss
-    * [CaffeNet Off-the-shelf](https://github.com/Hzzone/loss-function-comparation/tree/master/CaffeNet%20Off-the-shelf/Softmax_loss)
-    * [AlexNet Off-the-shelf](https://github.com/Hzzone/loss-function-comparation/tree/master/AlexNet%20Off-the-shelf/Softmax_loss)
-    * [CaffeNet Fine-tuning](https://github.com/Hzzone/loss-function-comparation/tree/master/CaffeNet%20Fine-tuning/Softmax_loss)
-    * [AlexNet Fine-tuning](https://github.com/Hzzone/loss-function-comparation/tree/master/AlexNet%20Fine-tuning/Softmax_loss)
+    * [ ] [CaffeNet Off-the-shelf](https://github.com/Hzzone/loss-function-comparation/tree/master/CaffeNet%20Off-the-shelf/Softmax_loss)
+    * [ ] [AlexNet Off-the-shelf](https://github.com/Hzzone/loss-function-comparation/tree/master/AlexNet%20Off-the-shelf/Softmax_loss)
+    * [ ] [CaffeNet Fine-tuning](https://github.com/Hzzone/loss-function-comparation/tree/master/CaffeNet%20Fine-tuning/Softmax_loss)
+    * [ ] [AlexNet Fine-tuning](https://github.com/Hzzone/loss-function-comparation/tree/master/AlexNet%20Fine-tuning/Softmax_loss)
 
 2. Softmax_loss + Center_loss
     * [CaffeNet Off-the-shelf](https://github.com/Hzzone/loss-function-comparation/tree/master/CaffeNet%20Off-the-shelf/Softmax_loss%20%2B%20Center_loss)
