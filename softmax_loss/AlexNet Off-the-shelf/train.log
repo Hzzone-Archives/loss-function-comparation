@@ -1,0 +1,35 @@
+I1003 03:47:44.348621  3425 caffe.cpp:218] Using GPUs 0
+I1003 03:47:44.370482  3425 caffe.cpp:223] GPU 0: GeForce GTX 1080 Ti
+I1003 03:47:44.723624  3425 solver.cpp:44] Initializing solver from parameters: 
+base_lr: 0.001
+display: 20
+max_iter: 300000
+lr_policy: "step"
+gamma: 0.1
+momentum: 0.9
+weight_decay: 0.0005
+stepsize: 100000
+snapshot: 10000
+snapshot_prefix: "/home/hzzone/1tb/AlexNet Off-the-shelf/Softmax_loss/caffe_alexnet_train"
+solver_mode: GPU
+device_id: 0
+net: "./train_val.prototxt"
+train_state {
+  level: 0
+  stage: ""
+}
+F1003 03:47:44.723742  3425 solver.cpp:431] Cannot write to snapshot prefix '/home/hzzone/1tb/AlexNet Off-the-shelf/Softmax_loss/caffe_alexnet_train'.  Make sure that the directory exists and is writeable.
+*** Check failure stack trace: ***
+    @     0x7fca9eb1e5cd  google::LogMessage::Fail()
+    @     0x7fca9eb20433  google::LogMessage::SendToLog()
+    @     0x7fca9eb1e15b  google::LogMessage::Flush()
+    @     0x7fca9eb20e1e  google::LogMessageFatal::~LogMessageFatal()
+    @     0x7fca9f28499d  caffe::Solver<>::CheckSnapshotWritePermissions()
+    @     0x7fca9f2888d2  caffe::Solver<>::Init()
+    @     0x7fca9f288c0f  caffe::Solver<>::Solver()
+    @     0x7fca9f2f01a1  caffe::Creator_SGDSolver<>()
+    @           0x40ada8  train()
+    @           0x4075a8  main
+    @     0x7fca9d293830  __libc_start_main
+    @           0x407e79  _start
+    @              (nil)  (unknown)
