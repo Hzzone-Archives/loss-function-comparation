@@ -106,9 +106,9 @@ def generate_siamese_dataset(source, totals=500000):
                 _same.append((x1, x2))
                 break
         while True:
-            x1 = random.randint(0, len(all_samples))
-            x2 = random.randint(0, len(all_samples))
-            if (x1, x2) not in _same and os.path.dirname(all_samples[x1]) != os.path.dirname(all_samples[x2]):
+            x1 = random.randint(0, len(all_samples)-1)
+            x2 = random.randint(0, len(all_samples)-1)
+            if (x1, x2) not in _diff and os.path.dirname(all_samples[x1]) != os.path.dirname(all_samples[x2]):
                 _diff.append((x1, x2))
                 break
         print i
