@@ -2,7 +2,7 @@
 import lmdb
 import numpy as np
 import os
-caffe_root = '/Users/HZzone/caffe'  # this file is expected to be in {caffe_root}/examples/siamese
+caffe_root = '/home/hzzone/caffe'  # this file is expected to be in {caffe_root}/examples/siamese
 import sys
 sys.path.insert(0, os.path.join(caffe_root, 'python'))
 import caffe
@@ -10,6 +10,7 @@ import preprocess
 from itertools import combinations
 import random
 import distance
+import random
 
 def generate_ordinary_lmdb(source, target, IMAGE_SIZE=227):
     env = lmdb.Environment(target, map_size=int(1e12))
@@ -33,8 +34,8 @@ def generate_ordinary_lmdb(source, target, IMAGE_SIZE=227):
 
 # source: the dataset folder
 def generate_siamese_lmdb(source, target, IMAGE_SIZE=227):
-    env = lmdb.Environment(target, map_size=int(1e12))
-    dataset = generate_siamese_dataset(source)
+    env = lmdb.Environment(target, map_size=int(1e12), writemap=True)
+    dataset = generate_siamese_dataset(source, totals=250000)
     _same = dataset[0]
     _diff = dataset[1]
     with env.begin(write=True) as txn:
@@ -81,21 +82,43 @@ def generate_siamese_dataset(source, totals=500000):
         for dicom_files in one_person_samples:
             sample = os.path.join(person_dir, dicom_files)
             all_samples.append(sample)
-    sample_combinations = list(combinations(all_samples, 2))
-    for one_comination in sample_combinations:
-        if os.path.dirname(one_comination[0]) == os.path.dirname(one_comination[1]):
-            _same.append(one_comination)
-        else:
-            _diff.append(one_comination)
-    random.shuffle(_diff)
-    random.shuffle(_same)
-    print _diff
-    print len(_diff)
-    return _same[:totals/2], _diff[:totals/2]
+    print "hello jelly"
+    # sample_combinations = list(combinations(all_samples, 2))
+    # sample_combinations = list(combinations(range(len(all_samples)), 2))
+    # print "hello jelly"
+    # for one_comination in sample_combinations:
+    #     if os.path.dirname(all_samples[one_comination[0]]) == os.path.dirname(all_samples[one_comination[1]]):
+    #         _same.append(one_comination)
+    #     else:
+    #         _diff.append(one_comination)
+    # print "hello jelly"
+    # random.shuffle(_diff)
+    # random.shuffle(_same)
+    # print len(_diff)
+    # # return _same[:totals/2], _diff[:totals/2]
+    # temp1 = [(all_samples[x], all_samples[y]) for x, y in _same[:totals/2]]
+    # temp2 = [(all_samples[x], all_samples[y]) for x, y in _diff[:totals/2]]
+    for i in range(totals/2):
+        while True:
+            x1 = random.randint(0, len(all_samples)-1)
+            x2 = random.randint(0, len(all_samples)-1)
+            if (x1, x2) not in _same and os.path.dirname(all_samples[x1]) == os.path.dirname(all_samples[x2]):
+                _same.append((x1, x2))
+                break
+        while True:
+            x1 = random.randint(0, len(all_samples))
+            x2 = random.randint(0, len(all_samples))
+            if (x1, x2) not in _same and os.path.dirname(all_samples[x1]) != os.path.dirname(all_samples[x2]):
+                _diff.append((x1, x2))
+                break
+        print i
+    temp1 = [(all_samples[x], all_samples[y]) for x, y in _same]
+    temp2 = [(all_samples[x], all_samples[y]) for x, y in _diff]
+    return temp1, temp2
 
 if __name__ == "__main__":
     # generate_ordinary_lmdb("../CASIA-WebFace", "/home/hzzone/1tb/data/train_lmdb", IMAGE_SIZE=227)
     # generate_ordinary_lmdb("../lfw", "/home/hzzone/1tb/data/test_lmdb", IMAGE_SIZE=227)
     # generate_siamese_lmdb("../CASIA-WebFace", "/home/hzzone/1tb/data/siamese_train_227_lmdb", IMAGE_SIZE=227)
-    generate_siamese_lmdb("../CASIA-WebFace", "/Volumes/SCUHzzone/siamese_train_lmdb", IMAGE_SIZE=227)
+    generate_siamese_lmdb("../CASIA-WebFace", "/home/hzzone/1tb/data/siamese_train_lmdb", IMAGE_SIZE=227)
     # generate_siamese_lmdb("../lfw", "/home/hzzone/1tb/data/test_lmdb", IMAGE_SIZE=227)
