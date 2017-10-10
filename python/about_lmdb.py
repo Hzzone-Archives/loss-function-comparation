@@ -11,6 +11,7 @@ from itertools import combinations
 import random
 import distance
 import random
+from numba import jit
 
 def generate_ordinary_lmdb(source, target, IMAGE_SIZE=227):
     env = lmdb.Environment(target, map_size=int(1e12))
@@ -68,10 +69,12 @@ def generate_siamese_lmdb(source, target, IMAGE_SIZE=227):
 
 # generate dataset path
 # combines the samples, return _same and _diff
+
+@jit
 def generate_siamese_dataset(source, totals=500000):
     all_samples = []
-    _same = []
-    _diff = []
+    _same = {}
+    _diff = {}
     for label, person in enumerate(os.listdir(source)):
         person_dir = os.path.join(source, person)
         one_person_samples = os.listdir(person_dir)
@@ -98,14 +101,15 @@ def generate_siamese_dataset(source, totals=500000):
         while True:
             x1 = random.randint(0, len(all_samples)-1)
             x2 = random.randint(0, len(all_samples)-1)
-            if (x1, x2) not in _same and os.path.dirname(all_samples[x1]) == os.path.dirname(all_samples[x2]):
-                _same.append((x1, x2))
+            if not _same.has_key((x1, x2)) and os.path.dirname(all_samples[x1]) == os.path.dirname(all_samples[x2]):
+                _same[(x1, x2)] = ''
                 break
         while True:
             x1 = random.randint(0, len(all_samples)-1)
             x2 = random.randint(0, len(all_samples)-1)
-            if (x1, x2) not in _diff and os.path.dirname(all_samples[x1]) != os.path.dirname(all_samples[x2]):
-                _diff.append((x1, x2))
+            if not _diff.has_key((x1, x2)) and os.path.dirname(all_samples[x1]) != os.path.dirname(all_samples[x2]):
+                # _diff.append((x1, x2))
+                _diff[(x1, x2)] = ''
                 break
         print i
     temp1 = [(all_samples[x], all_samples[y]) for x, y in _same]
