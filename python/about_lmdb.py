@@ -38,6 +38,15 @@ def generate_siamese_lmdb(source, target, IMAGE_SIZE=227):
     dataset = generate_siamese_dataset(source, totals=250000)
     _same = dataset[0]
     _diff = dataset[1]
+    random.shuffle(_same)
+    random.shuffle(_diff)
+    _same = [x.extend(1) for x in _same]
+    _diff = [x.extend(0) for x in _diff]
+    samples = []
+    samples.extend(_same)
+    samples.extend(_diff)
+    random.shuffle(samples)
+    random.shuffle(samples)
     with env.begin(write=True) as txn:
         datum = caffe.proto.caffe_pb2.Datum()
         dimension = 3
@@ -46,29 +55,16 @@ def generate_siamese_lmdb(source, target, IMAGE_SIZE=227):
         datum.width = IMAGE_SIZE
         sample = np.zeros((2*dimension, IMAGE_SIZE, IMAGE_SIZE))
         index = 0
-        for same_sample in _same:
-            label = 1
-            sample[:dimension, :, :] = preprocess.process(same_sample[0], IMAGE_SIZE)
-            sample[dimension:, :, :] = preprocess.process(same_sample[1], IMAGE_SIZE)
+        for one_sample in samples:
+            label = samples[-1]
+            sample[:dimension, :, :] = preprocess.process(one_sample[0], IMAGE_SIZE)
+            sample[dimension:, :, :] = preprocess.process(one_sample[1], IMAGE_SIZE)
             datum.data = sample.tobytes()
             datum.label = label
             str_id = "%8d" % index
             txn.put(str_id, datum.SerializeToString())
             index = index + 1
-            print same_sample
-            print "--------"
-        print "***********"
-        for diff_sample in _diff:
-            label = 0
-            sample[:dimension, :, :] = preprocess.process(diff_sample[0], IMAGE_SIZE)
-            sample[dimension:, :, :] = preprocess.process(diff_sample[1], IMAGE_SIZE)
-            datum.data = sample.tobytes()
-            datum.label = label
-            str_id = "%8d" % index
-            txn.put(str_id, datum.SerializeToString())
-            index = index + 1
-            print diff_sample
-            print "--------"
+            print index, one_sample
 
 # generate dataset path
 # combines the samples, return _same and _diff
