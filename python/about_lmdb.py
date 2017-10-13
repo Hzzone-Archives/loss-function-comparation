@@ -41,13 +41,19 @@ def generate_siamese_lmdb(source, target, IMAGE_SIZE=227):
     _diff = dataset[1]
     random.shuffle(_same)
     random.shuffle(_diff)
-    _same = [x.extend(1) for x in _same]
-    _diff = [x.extend(0) for x in _diff]
+    for x in _same:
+        x.append(1)
+    for x in _diff:
+        x.append(0)
     samples = []
     samples.extend(_same)
     samples.extend(_diff)
+    # print samples
     random.shuffle(samples)
     random.shuffle(samples)
+    random.shuffle(samples)
+    # print len(samples)
+    # print samples
     with env.begin(write=True) as txn:
         datum = caffe.proto.caffe_pb2.Datum()
         dimension = 3
@@ -57,7 +63,8 @@ def generate_siamese_lmdb(source, target, IMAGE_SIZE=227):
         sample = np.zeros((2*dimension, IMAGE_SIZE, IMAGE_SIZE))
         index = 0
         for one_sample in samples:
-            label = samples[-1]
+            print index, one_sample
+            label = one_sample[-1]
             sample[:dimension, :, :] = preprocess.process(one_sample[0], IMAGE_SIZE)
             sample[dimension:, :, :] = preprocess.process(one_sample[1], IMAGE_SIZE)
             datum.data = sample.tobytes()
@@ -65,7 +72,6 @@ def generate_siamese_lmdb(source, target, IMAGE_SIZE=227):
             str_id = "%8d" % index
             txn.put(str_id, datum.SerializeToString())
             index = index + 1
-            print index, one_sample
 
 # generate dataset path
 # combines the samples, return _same and _diff
@@ -81,7 +87,6 @@ def generate_siamese_dataset(source, totals=500000):
         for dicom_files in one_person_samples:
             sample = os.path.join(person_dir, dicom_files)
             all_samples.append(sample)
-    print "hello jelly"
     # sample_combinations = list(combinations(all_samples, 2))
     # sample_combinations = list(combinations(range(len(all_samples)), 2))
     # print "hello jelly"
@@ -112,8 +117,8 @@ def generate_siamese_dataset(source, totals=500000):
                 _diff[(x1, x2)] = ''
                 break
         print i
-    temp1 = [(all_samples[x], all_samples[y]) for x, y in _same]
-    temp2 = [(all_samples[x], all_samples[y]) for x, y in _diff]
+    temp1 = [list((all_samples[x], all_samples[y])) for x, y in _same.keys()]
+    temp2 = [list((all_samples[x], all_samples[y])) for x, y in _diff.keys()]
     return temp1, temp2
 
 if __name__ == "__main__":

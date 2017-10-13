@@ -13964,3 +13964,6 @@ I1010 21:59:43.203609 16791 sgd_solver.cpp:105] Iteration 88320, lr = 0.001
 I1010 22:00:23.597347 16791 solver.cpp:218] Iteration 88340 (0.495184 iter/s, 40.389s/20 iters), loss = 0.0804492
 I1010 22:00:23.600389 16791 solver.cpp:237]     Train net output #0: loss = 0.0804492 (* 1 = 0.0804492 loss)
 I1010 22:00:23.600407 16791 sgd_solver.cpp:105] Iteration 88340, lr = 0.001
+I1010 22:01:03.872635 16791 solver.cpp:218] Iteration 88360 (0.496676 iter/s, 40.2677s/20 iters), loss = 0.0758051
+I1010 22:01:03.875769 16791 solver.cpp:237]     Train net output #0: loss = 0.0758051 (* 1 = 0.0758051 loss)
+I1010 22:01:03.875973 16791 sgd_solver.cpp:105] Iteration 88360, lr = 0.001
