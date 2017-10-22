@@ -675,3 +675,37 @@ I1022 21:55:54.891469 26222 solver.cpp:228] Iteration 160, loss = 9.27187
 I1022 21:55:54.891805 26222 solver.cpp:244]     Train net output #0: center_loss = 0.782055 (* 0.008 = 0.00625644 loss)
 I1022 21:55:54.891816 26222 solver.cpp:244]     Train net output #1: loss = 9.26562 (* 1 = 9.26562 loss)
 I1022 21:55:54.891827 26222 sgd_solver.cpp:106] Iteration 160, lr = 0.0001
+I1022 21:56:37.370024 26222 solver.cpp:228] Iteration 180, loss = 9.27075
+I1022 21:56:37.370208 26222 solver.cpp:244]     Train net output #0: center_loss = 0.699525 (* 0.008 = 0.0055962 loss)
+I1022 21:56:37.370219 26222 solver.cpp:244]     Train net output #1: loss = 9.26515 (* 1 = 9.26515 loss)
+I1022 21:56:37.370230 26222 sgd_solver.cpp:106] Iteration 180, lr = 0.0001
+I1022 21:57:19.773988 26222 solver.cpp:228] Iteration 200, loss = 9.27278
+I1022 21:57:19.774240 26222 solver.cpp:244]     Train net output #0: center_loss = 0.831245 (* 0.008 = 0.00664996 loss)
+I1022 21:57:19.774251 26222 solver.cpp:244]     Train net output #1: loss = 9.26613 (* 1 = 9.26613 loss)
+I1022 21:57:19.774266 26222 sgd_solver.cpp:106] Iteration 200, lr = 0.0001
+I1022 21:58:01.158121 26222 solver.cpp:228] Iteration 220, loss = 9.27142
+I1022 21:58:01.158394 26222 solver.cpp:244]     Train net output #0: center_loss = 0.683285 (* 0.008 = 0.00546628 loss)
+I1022 21:58:01.158443 26222 solver.cpp:244]     Train net output #1: loss = 9.26595 (* 1 = 9.26595 loss)
+I1022 21:58:01.158481 26222 sgd_solver.cpp:106] Iteration 220, lr = 0.0001
+I1022 21:58:42.580075 26222 solver.cpp:228] Iteration 240, loss = 9.27314
+I1022 21:58:42.580224 26222 solver.cpp:244]     Train net output #0: center_loss = 0.764948 (* 0.008 = 0.00611958 loss)
+I1022 21:58:42.580235 26222 solver.cpp:244]     Train net output #1: loss = 9.26702 (* 1 = 9.26702 loss)
+I1022 21:58:42.580247 26222 sgd_solver.cpp:106] Iteration 240, lr = 0.0001
+I1022 21:59:23.479461 26222 solver.cpp:228] Iteration 260, loss = 9.27234
+I1022 21:59:23.479632 26222 solver.cpp:244]     Train net output #0: center_loss = 0.751619 (* 0.008 = 0.00601296 loss)
+I1022 21:59:23.479660 26222 solver.cpp:244]     Train net output #1: loss = 9.26632 (* 1 = 9.26632 loss)
+I1022 21:59:23.479686 26222 sgd_solver.cpp:106] Iteration 260, lr = 0.0001
+I1022 22:00:02.108958 26222 solver.cpp:228] Iteration 280, loss = 9.2718
+I1022 22:00:02.109117 26222 solver.cpp:244]     Train net output #0: center_loss = 0.810109 (* 0.008 = 0.00648088 loss)
+I1022 22:00:02.109127 26222 solver.cpp:244]     Train net output #1: loss = 9.26532 (* 1 = 9.26532 loss)
+I1022 22:00:02.109140 26222 sgd_solver.cpp:106] Iteration 280, lr = 0.0001
+I1022 22:00:41.284896 26222 solver.cpp:228] Iteration 300, loss = 9.27205
+I1022 22:00:41.285008 26222 solver.cpp:244]     Train net output #0: center_loss = 0.679225 (* 0.008 = 0.0054338 loss)
+I1022 22:00:41.285019 26222 solver.cpp:244]     Train net output #1: loss = 9.26662 (* 1 = 9.26662 loss)
+I1022 22:00:41.285032 26222 sgd_solver.cpp:106] Iteration 300, lr = 0.0001
+I1022 22:00:54.567579 26228 blocking_queue.cpp:50] Waiting for data
+I1022 22:01:22.244170 26222 solver.cpp:228] Iteration 320, loss = 9.27108
+I1022 22:01:22.246968 26222 solver.cpp:244]     Train net output #0: center_loss = 0.631249 (* 0.008 = 0.00505 loss)
+I1022 22:01:22.247025 26222 solver.cpp:244]     Train net output #1: loss = 9.26603 (* 1 = 9.26603 loss)
+I1022 22:01:22.247041 26222 sgd_solver.cpp:106] Iteration 320, lr = 0.0001
+I1022 22:01:37.678514 26222 blocking_queue.cpp:50] Data layer prefetch queue empty

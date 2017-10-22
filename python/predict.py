@@ -87,10 +87,6 @@ def ordinary_predict_dataset(source, caffemodel, deploy_file, dimension=150, IMA
     features = output[LAST_LAYER_NAME]
     return features, samples, patch
 
-def siamese_predict_dataset(source, caffemodel, deploy_file, dimension=150, IMAGE_SIZE=227):
-    pass
-
-
 if __name__ == "__main__":
     # # same
     # ordinary_predict_two_sample("/Users/HZzone/Desktop/temp/0007390273/29150000",
