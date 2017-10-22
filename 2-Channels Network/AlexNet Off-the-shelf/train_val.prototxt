@@ -7,10 +7,6 @@ layer {
   include {
     phase: TRAIN
   }
-  transform_param {
-    mirror: true
-    crop_size: 227
-  }
   data_param {
     source: "/home/hzzone/1tb/data/siamese_train_lmdb"
     batch_size: 64
@@ -320,6 +316,7 @@ layer {
     dropout_ratio: 0.5
   }
 }
+############## softmax loss ###############
 layer {
   name: "fc8"
   type: "InnerProduct"

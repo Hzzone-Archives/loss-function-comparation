@@ -1,41 +1,9 @@
 name: "AlexNet"
 layer {
   name: "data"
-  type: "Data"
+  type: "Input"
   top: "data"
-  top: "label"
-  include {
-    phase: TRAIN
-  }
-  transform_param {
-    mirror: true
-    crop_size: 227
-    mean_file: "data/ilsvrc12/imagenet_mean.binaryproto"
-  }
-  data_param {
-    source: "examples/imagenet/ilsvrc12_train_lmdb"
-    batch_size: 256
-    backend: LMDB
-  }
-}
-layer {
-  name: "data"
-  type: "Data"
-  top: "data"
-  top: "label"
-  include {
-    phase: TEST
-  }
-  transform_param {
-    mirror: false
-    crop_size: 227
-    mean_file: "data/ilsvrc12/imagenet_mean.binaryproto"
-  }
-  data_param {
-    source: "examples/imagenet/ilsvrc12_val_lmdb"
-    batch_size: 50
-    backend: LMDB
-  }
+  input_param { shape: { dim: 10 dim: 3 dim: 227 dim: 227 } }
 }
 layer {
   name: "conv1"
@@ -54,14 +22,6 @@ layer {
     num_output: 96
     kernel_size: 11
     stride: 4
-    weight_filler {
-      type: "gaussian"
-      std: 0.01
-    }
-    bias_filler {
-      type: "constant"
-      value: 0
-    }
   }
 }
 layer {
@@ -110,14 +70,6 @@ layer {
     pad: 2
     kernel_size: 5
     group: 2
-    weight_filler {
-      type: "gaussian"
-      std: 0.01
-    }
-    bias_filler {
-      type: "constant"
-      value: 0.1
-    }
   }
 }
 layer {
@@ -165,14 +117,6 @@ layer {
     num_output: 384
     pad: 1
     kernel_size: 3
-    weight_filler {
-      type: "gaussian"
-      std: 0.01
-    }
-    bias_filler {
-      type: "constant"
-      value: 0
-    }
   }
 }
 layer {
@@ -199,14 +143,6 @@ layer {
     pad: 1
     kernel_size: 3
     group: 2
-    weight_filler {
-      type: "gaussian"
-      std: 0.01
-    }
-    bias_filler {
-      type: "constant"
-      value: 0.1
-    }
   }
 }
 layer {
@@ -233,14 +169,6 @@ layer {
     pad: 1
     kernel_size: 3
     group: 2
-    weight_filler {
-      type: "gaussian"
-      std: 0.01
-    }
-    bias_filler {
-      type: "constant"
-      value: 0.1
-    }
   }
 }
 layer {
@@ -275,14 +203,6 @@ layer {
   }
   inner_product_param {
     num_output: 4096
-    weight_filler {
-      type: "gaussian"
-      std: 0.005
-    }
-    bias_filler {
-      type: "constant"
-      value: 0.1
-    }
   }
 }
 layer {
@@ -315,14 +235,6 @@ layer {
   }
   inner_product_param {
     num_output: 4096
-    weight_filler {
-      type: "gaussian"
-      std: 0.005
-    }
-    bias_filler {
-      type: "constant"
-      value: 0.1
-    }
   }
 }
 layer {
@@ -354,31 +266,6 @@ layer {
     decay_mult: 0
   }
   inner_product_param {
-    num_output: 1000
-    weight_filler {
-      type: "gaussian"
-      std: 0.01
-    }
-    bias_filler {
-      type: "constant"
-      value: 0
-    }
+    num_output: 10572
   }
-}
-layer {
-  name: "accuracy"
-  type: "Accuracy"
-  bottom: "fc8"
-  bottom: "label"
-  top: "accuracy"
-  include {
-    phase: TEST
-  }
-}
-layer {
-  name: "loss"
-  type: "SoftmaxWithLoss"
-  bottom: "fc8"
-  bottom: "label"
-  top: "loss"
 }

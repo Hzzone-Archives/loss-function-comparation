@@ -1,31 +1,4 @@
-I1022 21:35:48.110200 24787 caffe.cpp:218] Using GPUs 0
-I1022 21:35:48.150719 24787 caffe.cpp:223] GPU 0: GeForce GTX 1080 Ti
-I1022 21:35:48.516773 24787 solver.cpp:44] Initializing solver from parameters: 
-base_lr: 0.001
-display: 20
-max_iter: 100000
-lr_policy: "step"
-gamma: 0.1
-momentum: 0.9
-weight_decay: 0.0005
-stepsize: 40000
-snapshot: 10000
-snapshot_prefix: "/home/hzzone/1tb/AlexNet Off-the-shelf/2-Channels Network/caffe_alexnet_train"
-solver_mode: GPU
-device_id: 0
-net: "./train_val.prototxt"
-train_state {
-  level: 0
-  stage: ""
-}
-I1022 21:35:48.517005 24787 solver.cpp:87] Creating training net from net file: ./train_val.prototxt
-I1022 21:35:48.517588 24787 net.cpp:51] Initializing net from parameters: 
-name: "AlexNet"
-state {
-  phase: TRAIN
-  level: 0
-  stage: ""
-}
+name: "CaffeNet"
 layer {
   name: "data"
   type: "Data"
@@ -34,9 +7,13 @@ layer {
   include {
     phase: TRAIN
   }
+  transform_param {
+    mirror: true
+    crop_size: 227
+  }
   data_param {
-    source: "/home/hzzone/1tb/data/siamese_train_lmdb"
-    batch_size: 64
+    source: "/home/hzzone/1tb/data/train_lmdb"
+    batch_size: 128
     backend: LMDB
   }
 }
@@ -74,20 +51,9 @@ layer {
   top: "conv1"
 }
 layer {
-  name: "norm1"
-  type: "LRN"
-  bottom: "conv1"
-  top: "norm1"
-  lrn_param {
-    local_size: 5
-    alpha: 0.0001
-    beta: 0.75
-  }
-}
-layer {
   name: "pool1"
   type: "Pooling"
-  bottom: "norm1"
+  bottom: "conv1"
   top: "pool1"
   pooling_param {
     pool: MAX
@@ -96,9 +62,20 @@ layer {
   }
 }
 layer {
+  name: "norm1"
+  type: "LRN"
+  bottom: "pool1"
+  top: "norm1"
+  lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+  }
+}
+layer {
   name: "conv2"
   type: "Convolution"
-  bottom: "pool1"
+  bottom: "norm1"
   top: "conv2"
   param {
     lr_mult: 1
@@ -119,7 +96,7 @@ layer {
     }
     bias_filler {
       type: "constant"
-      value: 0.1
+      value: 1
     }
   }
 }
@@ -130,20 +107,9 @@ layer {
   top: "conv2"
 }
 layer {
-  name: "norm2"
-  type: "LRN"
-  bottom: "conv2"
-  top: "norm2"
-  lrn_param {
-    local_size: 5
-    alpha: 0.0001
-    beta: 0.75
-  }
-}
-layer {
   name: "pool2"
   type: "Pooling"
-  bottom: "norm2"
+  bottom: "conv2"
   top: "pool2"
   pooling_param {
     pool: MAX
@@ -152,9 +118,20 @@ layer {
   }
 }
 layer {
+  name: "norm2"
+  type: "LRN"
+  bottom: "pool2"
+  top: "norm2"
+  lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+  }
+}
+layer {
   name: "conv3"
   type: "Convolution"
-  bottom: "pool2"
+  bottom: "norm2"
   top: "conv3"
   param {
     lr_mult: 1
@@ -208,7 +185,7 @@ layer {
     }
     bias_filler {
       type: "constant"
-      value: 0.1
+      value: 1
     }
   }
 }
@@ -242,7 +219,7 @@ layer {
     }
     bias_filler {
       type: "constant"
-      value: 0.1
+      value: 1
     }
   }
 }
@@ -284,7 +261,7 @@ layer {
     }
     bias_filler {
       type: "constant"
-      value: 0.1
+      value: 1
     }
   }
 }
@@ -324,7 +301,7 @@ layer {
     }
     bias_filler {
       type: "constant"
-      value: 0.1
+      value: 1
     }
   }
 }
@@ -343,11 +320,12 @@ layer {
     dropout_ratio: 0.5
   }
 }
+############## softmax loss ###############
 layer {
-  name: "fc8"
+  name: "my-fc8"
   type: "InnerProduct"
   bottom: "fc7"
-  top: "fc8"
+  top: "my-fc8"
   param {
     lr_mult: 1
     decay_mult: 1
@@ -357,7 +335,7 @@ layer {
     decay_mult: 0
   }
   inner_product_param {
-    num_output: 2
+    num_output: 10572
     weight_filler {
       type: "gaussian"
       std: 0.01
@@ -371,40 +349,26 @@ layer {
 layer {
   name: "loss"
   type: "SoftmaxWithLoss"
-  bottom: "fc8"
+  bottom: "my-fc8"
   bottom: "label"
   top: "loss"
 }
-I1022 21:35:48.517714 24787 layer_factory.hpp:77] Creating layer data
-I1022 21:35:48.517859 24787 db_lmdb.cpp:35] Opened lmdb /home/hzzone/1tb/data/siamese_train_lmdb
-I1022 21:35:48.517882 24787 net.cpp:84] Creating Layer data
-I1022 21:35:48.517894 24787 net.cpp:380] data -> data
-I1022 21:35:48.517918 24787 net.cpp:380] data -> label
-terminate called after throwing an instance of 'std::logic_error'
-  what():  basic_string::_M_construct null not valid
-*** Aborted at 1508679348 (unix time) try "date -d @1508679348" if you are using GNU date ***
-PC: @     0x7fe2519a8428 gsignal
-*** SIGABRT (@0x60d3) received by PID 24787 (TID 0x7fe2544c1ac0) from PID 24787; stack trace: ***
-    @     0x7fe2519a84b0 (unknown)
-    @     0x7fe2519a8428 gsignal
-    @     0x7fe2519aa02a abort
-    @     0x7fe2527ca84d __gnu_cxx::__verbose_terminate_handler()
-    @     0x7fe2527c86b6 (unknown)
-    @     0x7fe2527c8701 std::terminate()
-    @     0x7fe2527c8919 __cxa_throw
-    @     0x7fe2527f114f std::__throw_logic_error()
-    @     0x7fe2539a7264 std::__cxx11::basic_string<>::_M_construct<>()
-    @     0x7fe2539a81eb _ZN5caffe2db10LMDBCursor5valueB5cxx11Ev
-    @     0x7fe253927220 caffe::DataLayer<>::DataLayerSetUp()
-    @     0x7fe25392a21e caffe::BasePrefetchingDataLayer<>::LayerSetUp()
-    @     0x7fe25397bcb7 caffe::Net<>::Init()
-    @     0x7fe25397e3fe caffe::Net<>::Net()
-    @     0x7fe253987505 caffe::Solver<>::InitTrainNet()
-    @     0x7fe2539888f5 caffe::Solver<>::Init()
-    @     0x7fe253988c0f caffe::Solver<>::Solver()
-    @     0x7fe2539f01a1 caffe::Creator_SGDSolver<>()
-    @           0x40ada8 train()
-    @           0x4075a8 main
-    @     0x7fe251993830 __libc_start_main
-    @           0x407e79 _start
-    @                0x0 (unknown)
+############## center loss ###############
+layer {
+  name: "center_loss"
+  type: "CenterLoss"
+  bottom: "fc7"
+  bottom: "label"
+  top: "center_loss"
+  param {
+    lr_mult: 1
+    decay_mult: 2 
+  }
+  center_loss_param {
+    num_output: 10572
+    center_filler {
+      type: "xavier"
+    }
+  }
+  loss_weight: 0.008
+}

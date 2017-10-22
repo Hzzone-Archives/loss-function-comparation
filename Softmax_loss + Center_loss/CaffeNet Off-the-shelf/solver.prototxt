@@ -8,5 +8,5 @@ max_iter: 100000
 momentum: 0.9
 weight_decay: 0.0005
 snapshot: 10000
-snapshot_prefix: "/home/hzzone/1tb/AlexNet Off-the-shelf/2-Channels Network/caffe_alexnet_train"
+snapshot_prefix: "/home/hzzone/1tb/CaffeNet Off-the-shelf/Softmax_loss + Center_loss/caffenet_train"
 solver_mode: GPU
