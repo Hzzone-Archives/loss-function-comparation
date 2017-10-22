@@ -87,21 +87,6 @@ def generate_siamese_dataset(source, totals=500000):
         for dicom_files in one_person_samples:
             sample = os.path.join(person_dir, dicom_files)
             all_samples.append(sample)
-    # sample_combinations = list(combinations(all_samples, 2))
-    # sample_combinations = list(combinations(range(len(all_samples)), 2))
-    # print "hello jelly"
-    # for one_comination in sample_combinations:
-    #     if os.path.dirname(all_samples[one_comination[0]]) == os.path.dirname(all_samples[one_comination[1]]):
-    #         _same.append(one_comination)
-    #     else:
-    #         _diff.append(one_comination)
-    # print "hello jelly"
-    # random.shuffle(_diff)
-    # random.shuffle(_same)
-    # print len(_diff)
-    # # return _same[:totals/2], _diff[:totals/2]
-    # temp1 = [(all_samples[x], all_samples[y]) for x, y in _same[:totals/2]]
-    # temp2 = [(all_samples[x], all_samples[y]) for x, y in _diff[:totals/2]]
     for i in range(totals/2):
         while True:
             x1 = random.randint(0, len(all_samples)-1)

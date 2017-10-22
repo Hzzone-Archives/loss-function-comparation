@@ -10,11 +10,6 @@ import preprocess
 import distance
 import about_lmdb
 
-# output
-def output_features(source):
-    samples = [os.path.join(source, s) for s in os.listdir(source)]
-    all_samples = [os.path.join(source, s) for s in os.listdir(source)]
-
 # source dataset lmdb
 def predict_siamese_with_softmaxloss(source, caffemodel, deploy_file, IMAGE_SIZE=227, gpu_mode=True, LAST_LAYER_NAME="ip1"):
     if gpu_mode:
@@ -59,43 +54,31 @@ def ordinary_predict_two_sample(source1, source2, caffemodel, deploy_file, dimen
     second_sample_feature = output[LAST_LAYER_NAME][1]
     print distance.cosine_distnace(first_sample_feature, second_sample_feature)
 
-def siamese_predict_two_sample(source, dimension=150, IMAGE_SIZE=227):
-    pass
-
-# source: Test dataset
-def ordinary_predict_dataset(source, caffemodel, deploy_file, dimension=150, IMAGE_SIZE=227, gpu_mode=True, LAST_LAYER_NAME="ip1"):
+# source: Test dataset, generate dataset's features(person name, file name, features)
+def output_features_of_dataset(source, caffemodel, deploy_file, IMAGE_SIZE=227, gpu_mode=True, LAST_LAYER_NAME="ip1", batch_size=240, save_file_path="./features.txt"):
     if gpu_mode:
         caffe.set_mode_gpu()
     else:
         caffe.set_mode_cpu()
     net = caffe.Net(deploy_file, caffemodel, caffe.TEST)
-    patch = about_lmdb.generate_siamese_dataset(source)
     samples = []
-    for root, dirs, files in os.walk(source):
-        for dicom_file in files:
-            samples.append(root)
-            break
-    data = np.zeros((len(samples), dimension, IMAGE_SIZE, IMAGE_SIZE))
-    for index, sample in enumerate(samples):
-        path = os.path.join(source, sample)
-        data[index, :, :, :] = preprocess.readManyDicom(path, IMAGE_SIZE, dimension) * 0.00390625
-    print data.shape
-    # only for test LeNet
-    # data = data * 0.00390625
-    net.blobs['data'].data[...] = data
-    output = net.forward()
-    features = output[LAST_LAYER_NAME]
-    return features, samples, patch
+    for dir_name in os.listdir(source):
+        one_person_dir = os.path.join(source, dir_name)
+        for file_name in os.listdir(source):
+            one_person_pic_path = os.path.join(one_person_dir, file_name)
+            samples.append((dir_name, file_name, one_person_pic_path))
+    data = np.zeros((batch_size, 3, IMAGE_SIZE, IMAGE_SIZE))
+    with open(save_file_path, "w") as f:
+        for index, sample in enumerate(samples):
+            t = index % batch_size
+            data[t, :, :, :] = preprocess.process(sample[2], IMAGE_SIZE)
+            if t == 0:
+                net.blobs['data'].data[...] = data
+                output = net.forward()
+                features = output[LAST_LAYER_NAME]
+                lines = ["%s %s %s\n" % (s[0][0], s[0][1], " ".join(s[1])) for s in zip(samples[index-50:index], features)]
+                f.writelines(lines)
 
 if __name__ == "__main__":
-    # # same
-    # ordinary_predict_two_sample("/Users/HZzone/Desktop/temp/0007390273/29150000",
-    #                             "/Users/HZzone/Desktop/temp/0007390273/33108983",
-    #                             "/Users/HZzone/Downloads/lenet_iter_10000.caffemodel", "../ct-test/lenet.prototxt", gpu_mode=False)
-    #
-    # # diff
-    # ordinary_predict_two_sample("/Users/HZzone/Desktop/temp/0008064128/10480000",
-    #                             "/Users/HZzone/Desktop/temp/0007390273/33108983",
-    #                             "/Users/HZzone/Downloads/lenet_iter_10000.caffemodel", "../ct-test/lenet.prototxt", gpu_mode=False)
     predict_siamese_with_softmaxloss("../mnist_siamese_with_softmax_loss/mnist_siamese_test_leveldb", "../mnist_siamese_with_softmax_loss/mnist_siamese_train_softmaxloss_iter_10000.caffemodel",
                                      "../mnist_siamese_with_softmax_loss/mnist_siamese_two_branch.prototxt", gpu_mode=False, IMAGE_SIZE=28, LAST_LAYER_NAME="classifier")
