@@ -11,7 +11,7 @@ from itertools import combinations
 import random
 import distance
 import random
-from numba import jit
+# from numba import jit
 
 def generate_ordinary_lmdb(source, target, IMAGE_SIZE=227):
     env = lmdb.Environment(target, map_size=int(1e12))
@@ -76,7 +76,7 @@ def generate_siamese_lmdb(source, target, IMAGE_SIZE=227):
 # generate dataset path
 # combines the samples, return _same and _diff
 
-@jit
+# @jit
 def generate_siamese_dataset(source, totals=500000):
     all_samples = []
     _same = {}

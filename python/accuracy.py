@@ -3,67 +3,106 @@ import distance
 import matplotlib.pyplot as plt
 import pylab
 import numpy as np
+import random
+import threading
+import sys
+import datetime
+import time
+import accuracy
+import logging
 
-def generate_accuracy_with_threshold(source, caffemodel, deploy_file, threshold=0, dimension=150, IMAGE_SIZE=227, gpu_mode=True, LAST_LAYER_NAME="ip1"):
-    features, samples, patch = predict.ordinary_predict_dataset(source=source, caffemodel=caffemodel, deploy_file=deploy_file, dimension=dimension, IMAGE_SIZE=IMAGE_SIZE, gpu_mode=gpu_mode, LAST_LAYER_NAME=LAST_LAYER_NAME)
-    # for index, feature in enumerate(features):
-    correct = 0
-    totals = len(patch[0]) + len(patch[1])
-    print patch[0]
-    print patch[1]
-    for x in patch[0]:
-        s1, s2 = x
-        i1 = samples.index(s1)
-        i2 = samples.index(s2)
-        print "i1, i2:%s %s" % (i1, i2)
-        d = distance.cosine_distnace(features[i1], features[i2])
-        print d
-        if d >= threshold:
-            correct = correct + 1
-    print "------"
-    for x in patch[1]:
-        s1, s2 = x
-        i1 = samples.index(s1)
-        i2 = samples.index(s2)
-        print "i1, i2:%s %s" % (i1, i2)
-        d = distance.cosine_distnace(features[i1], features[i2])
-        if d < threshold:
-            correct = correct + 1
-        print d
-    return float(correct)/totals
 
-def plot_accuracy_map(source, caffemodel, deploy_file, dimension=150, IMAGE_SIZE=227, gpu_mode=True, LAST_LAYER_NAME="ip1"):
-    features, samples, patch = predict.ordinary_predict_dataset(source=source, caffemodel=caffemodel, deploy_file=deploy_file, dimension=dimension, IMAGE_SIZE=IMAGE_SIZE, gpu_mode=gpu_mode, LAST_LAYER_NAME=LAST_LAYER_NAME)
-    # for index, feature in enumerate(features):
-    totals = len(patch[0]) + len(patch[1])
-    print patch[0]
-    print patch[1]
-    x_values = pylab.arange(-1.0, 1.01, 0.001)
-    y_values = []
-    for threshold in x_values:
+features = None
+_same = {}
+_diff = {}
+totals = 100000
+dic = {}
+
+class MyThread(threading.Thread):
+
+    def __init__(self, threshold):
+        threading.Thread.__init__(self)
+        self.threshold = threshold
+
+    def run(self):
+        begin = datetime.datetime.now()
         correct = 0
-        print "------"*2
-        for x in patch[0]:
+        index = 0
+        for x in accuracy._same.keys():
             s1, s2 = x
-            i1 = samples.index(s1)
-            i2 = samples.index(s2)
-            d = distance.cosine_distnace(features[i1], features[i2])
-            print d
-            if d >= threshold:
+            print index
+            d = distance.cosine_distnace(np.array(map(float, accuracy.features[s1][2:])), np.array(map(float, accuracy.features[s2][2:])))
+            if d >= self.threshold:
                 correct = correct + 1
-        print "******"
-        for x in patch[1]:
+            index += 1
+        for x in accuracy._diff.keys():
             s1, s2 = x
-            i1 = samples.index(s1)
-            i2 = samples.index(s2)
-            d = distance.cosine_distnace(features[i1], features[i2])
-            print d
-            if d < threshold:
+            print ''
+            d = distance.cosine_distnace(np.array(map(float, accuracy.features[s1][2:])), np.array(map(float, accuracy.features[s2][2:])))
+            if d < self.threshold:
                 correct = correct + 1
+            index += 1
         print "------"*2
-        y_values.append(float(correct)/totals)
+        self.result = self.threshold, float(correct)/totals
+        accuracy.dic[self.threshold] = float(correct)/totals
+        end = datetime.datetime.now()
+        print end - begin
+
+    def get_result(self):
+        return self.result
+
+
+
+'''
+plot accuracy map
+from features.txt and test sequence
+'''
+def plot_accuracy(features_source, sequence_source):
+    '''
+
+    :param features_source: the features txt
+    :param sequence_source: the  sequence text
+    :return: None
+    '''
+    '''
+    read features from features.txt
+    '''
+    with open(features_source) as f:
+        accuracy.features = [line.strip("\n").split(" ") for line in f.readlines()]
+    '''
+    Temporary generate sequence
+    '''
+    ###################
+    for i in range(totals/2):
+        while True:
+            x1 = random.randint(0, len(accuracy.features)-1)
+            x2 = random.randint(0, len(accuracy.features)-1)
+            if not accuracy._same.has_key((x1, x2)) and accuracy.features[x1][0]==accuracy.features[x2][0]:
+                accuracy._same[(x1, x2)] = ''
+                break
+        while True:
+            x1 = random.randint(0, len(accuracy.features)-1)
+            x2 = random.randint(0, len(accuracy.features)-1)
+            if not accuracy._diff.has_key((x1, x2)) and accuracy.features[x1][0]!=accuracy.features[x2][0]:
+                accuracy._diff[(x1, x2)] = ''
+                break
+        print i
+    ###################
+    x_values = pylab.arange(-1.0, 1.01, 0.01)
+    y_values = []
+    threads = []
+    for threshold in x_values:
+        threads.append(MyThread(threshold))
+        # y_values.append(float(correct)/totals)
+    for t in threads:
+        t.start()
+    time.sleep(500)
+    # result = [t.get_result() for t in threads]
+    d = accuracy.dic
+    acc = sorted(d.items(), key=lambda d:d[0])
+    for temp in acc:
+        y_values.append(temp[1])
     max_index = np.argmax(y_values)
-    print max_index
     plt.title("threshold-accuracy curve")
     plt.xlabel("threshold")
     plt.ylabel("accuracy")
@@ -73,6 +112,5 @@ def plot_accuracy_map(source, caffemodel, deploy_file, dimension=150, IMAGE_SIZE
     plt.show()
 
 if __name__ == "__main__":
-    plot_accuracy_map("/Users/HZzone/Desktop/temp/test", "/Users/HZzone/Downloads/lenet_siamese_train_iter_15000.caffemodel", "../ct-test/lenet_siamese.prototxt", gpu_mode=False, LAST_LAYER_NAME="feat")
-    # print generate_accuracy_with_threshold("/Users/HZzone/Desktop/temp", "/Users/HZzone/Downloads/lenet_iter_10000.caffemodel", "../ct-test/lenet.prototxt", gpu_mode=False, threshold=0.97)
+    plot_accuracy("/Users/HZzone/Desktop/features.txt", "")
 
