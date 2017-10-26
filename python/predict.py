@@ -25,7 +25,7 @@ def ordinary_predict_two_sample(source1, source2, caffemodel, deploy_file, dimen
     output = net.forward()
     first_sample_feature = output[LAST_LAYER_NAME][0]
     second_sample_feature = output[LAST_LAYER_NAME][1]
-    print distance.cosine_distnace(first_sample_feature, second_sample_feature)
+    print(distance.cosine_distnace(first_sample_feature, second_sample_feature))
 
 # source: Test dataset, generate dataset's features(person name, file name, features)
 def output_features_of_dataset(source, caffemodel, deploy_file, IMAGE_SIZE=227, gpu_mode=True, LAST_LAYER_NAME="ip1", batch_size=240, save_file_path="./features.txt"):

@@ -1,55 +1,40 @@
-import predict
+# import predict
 import distance
 import matplotlib.pyplot as plt
 import pylab
 import numpy as np
 import random
 import threading
-import sys
 import datetime
 import time
+import array
+import sample
 import accuracy
-import logging
+
+'''
+this file should be used in python3,
+which has used cython to accelerate the speed of calcuate accuray of different threshold.
+'''
 
 
-features = None
-_same = {}
-_diff = {}
 totals = 100000
 dic = {}
 
 class MyThread(threading.Thread):
 
-    def __init__(self, threshold):
+    def __init__(self, threshold, _same_distance, _diff_distance):
         threading.Thread.__init__(self)
         self.threshold = threshold
+        self._same_distance = _same_distance
+        self._diff_distance = _diff_distance
 
     def run(self):
         begin = datetime.datetime.now()
-        correct = 0
-        index = 0
-        for x in accuracy._same.keys():
-            s1, s2 = x
-            print index
-            d = distance.cosine_distnace(np.array(map(float, accuracy.features[s1][2:])), np.array(map(float, accuracy.features[s2][2:])))
-            if d >= self.threshold:
-                correct = correct + 1
-            index += 1
-        for x in accuracy._diff.keys():
-            s1, s2 = x
-            print ''
-            d = distance.cosine_distnace(np.array(map(float, accuracy.features[s1][2:])), np.array(map(float, accuracy.features[s2][2:])))
-            if d < self.threshold:
-                correct = correct + 1
-            index += 1
-        print "------"*2
-        self.result = self.threshold, float(correct)/totals
-        accuracy.dic[self.threshold] = float(correct)/totals
+        acc = sample.clip(array.array('d', self._same_distance), self.threshold, array.array('d', self._diff_distance))
+        accuracy.dic[self.threshold] = acc
         end = datetime.datetime.now()
-        print end - begin
+        print(end - begin, acc)
 
-    def get_result(self):
-        return self.result
 
 
 
@@ -68,31 +53,50 @@ def plot_accuracy(features_source, sequence_source):
     read features from features.txt
     '''
     with open(features_source) as f:
-        accuracy.features = [line.strip("\n").split(" ") for line in f.readlines()]
+        features = [line.strip("\n").split(" ") for line in f.readlines()]
     '''
     Temporary generate sequence
     '''
     ###################
-    for i in range(totals/2):
+    _same = {}
+    _diff = {}
+    _same_distance = []
+    _diff_distance = []
+    for i in range(int(totals/2)):
         while True:
-            x1 = random.randint(0, len(accuracy.features)-1)
-            x2 = random.randint(0, len(accuracy.features)-1)
-            if not accuracy._same.has_key((x1, x2)) and accuracy.features[x1][0]==accuracy.features[x2][0]:
-                accuracy._same[(x1, x2)] = ''
+            x1 = random.randint(0, len(features)-1)
+            x2 = random.randint(0, len(features)-1)
+            if not (x1, x2) in _same and features[x1][0] == features[x2][0]:
+                _same[(x1, x2)] = ''
                 break
         while True:
-            x1 = random.randint(0, len(accuracy.features)-1)
-            x2 = random.randint(0, len(accuracy.features)-1)
-            if not accuracy._diff.has_key((x1, x2)) and accuracy.features[x1][0]!=accuracy.features[x2][0]:
-                accuracy._diff[(x1, x2)] = ''
+            x1 = random.randint(0, len(features)-1)
+            x2 = random.randint(0, len(features)-1)
+            if not (x1, x2) in _diff and features[x1][0] != features[x2][0]:
+                _diff[(x1, x2)] = ''
                 break
-        print i
+        print(i)
     ###################
+    #### get the distances
+    for x in _same.keys():
+        s1, s2 = x
+        d = distance.cosine_distnace(np.array(list(map(float, features[s1][2:]))),
+                                     np.array(list(map(float, features[s2][2:]))))
+        _same_distance.append(d)
+        print(x)
+    for x in _diff.keys():
+        s1, s2 = x
+        d = distance.cosine_distnace(np.array(list(map(float, features[s1][2:]))),
+                                     np.array(list(map(float, features[s2][2:]))))
+        print(x)
+        _diff_distance.append(d)
+    print("get the distances complete!")
+    ####################
     x_values = pylab.arange(-1.0, 1.01, 0.01)
     y_values = []
     threads = []
     for threshold in x_values:
-        threads.append(MyThread(threshold))
+        threads.append(MyThread(threshold, _same_distance, _diff_distance))
         # y_values.append(float(correct)/totals)
     for t in threads:
         t.start()
@@ -112,5 +116,5 @@ def plot_accuracy(features_source, sequence_source):
     plt.show()
 
 if __name__ == "__main__":
-    plot_accuracy("/Users/HZzone/Desktop/features.txt", "")
+    plot_accuracy("features.txt", "")
 

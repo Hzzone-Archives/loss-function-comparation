@@ -6,3 +6,6 @@ train_223_lmdb
 train_227_lmdb
 data
 *.caffemodel
+/python/sample.c
+/python/features.txt
+/python/build/
